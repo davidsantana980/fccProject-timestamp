@@ -25,7 +25,7 @@ app.get("/api/:date?", (req, res) => {
   if(req.params.date){
     let parsedDate;
 
-    if(parseInt(req.params.date) === 1451001600000){
+    if(/\d{5,}/.test(req.params.date)){
       parsedDate = new Date(parseInt(req.params.date));
       message = {"unix": Date.parse(parsedDate), "utc": parsedDate.toGMTString()};
     }else{
