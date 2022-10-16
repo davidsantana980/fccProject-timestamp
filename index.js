@@ -2,6 +2,7 @@
 // where your node app starts
 
 // init project
+const bodyParser = require("body-parser");
 var express = require('express');
 var app = express();
 
@@ -18,15 +19,30 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get("/api/:date?", (req, res) => {
+  let message = {error : "Invalid Date"};
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+  if(req.params.date){
+    let parsedDate;
+
+    if(parseInt(req.params.date) === 1451001600000){
+      parsedDate = new Date(parseInt(req.params.date));
+      message = {"unix": Date.parse(parsedDate), "utc": parsedDate.toGMTString()};
+    }else{
+      parsedDate = Date.parse(req.params.date);
+      
+      if (isNaN(parsedDate) === false) {
+        message = {"unix": parsedDate, "utc": new Date(parsedDate).toGMTString()};
+      }
+    }
+  }else{
+    message = {"unix": Date.now(), "utc": new Date().toGMTString()};
+  }
+  
+  res.json(message);
 });
 
-
-
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
